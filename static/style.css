@@ -1,0 +1,146 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f5f7fb;
+}
+
+/* Navbar */
+.navbar {
+    background: #667eea;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar h2 {
+    margin: 0;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin-left: 15px;
+}
+
+/* Container */
+.container {
+    width: 90%;
+    max-width: 1000px;
+    margin: auto;
+    margin-top: 20px;
+}
+
+/* Cards */
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Buttons */
+button, a.btn {
+    background: #667eea;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+button:hover, a.btn:hover {
+    background: #5a67d8;
+}
+
+/* Inputs */
+input {
+    padding: 8px;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #667eea;
+    color: white;
+}
+
+td, th {
+    padding: 10px;
+    text-align: center;
+}
+
+tr:nth-child(even) {
+    background: #f2f2f2;
+}
+
+/* Summary Badges */
+.badge {
+    display: inline-block;
+    padding: 6px 10px;
+    margin: 5px;
+    border-radius: 20px;
+    color: white;
+}
+
+.food { background: #ff6b6b; }
+.travel { background: #4ecdc4; }
+.shopping { background: #ffa502; }
+.other { background: #6c5ce7; }
+
+/* Dark Mode */
+body.dark {
+    background: #121212;
+    color: white;
+}
+
+body.dark .card {
+    background: #1e1e1e;
+}
+
+body.dark table {
+    background: #2a2a2a;
+}
+/* Card hover animation */
+.card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* Button animation */
+button, .btn {
+    transition: 0.3s;
+}
+
+button:hover, .btn:hover {
+    transform: scale(1.05);
+}
+
+/* Table hover */
+tr:hover {
+    background: #eef;
+}
+
+/* Smooth page load */
+body {
+    animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}

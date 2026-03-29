@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Tracker</title>
+
+    <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
+
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>💰 Expense Tracker</h2>
+    <div>
+        <a href="/add">Add</a>
+        <a href="/logout">Logout</a>
+        <button onclick="toggleDark()">🌙</button>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- SEARCH -->
+    <div class="card" data-aos="fade-down">
+        <form method="GET">
+            <input type="text" name="search" placeholder="Search title">
+            <input type="text" name="category" placeholder="Filter category">
+            <button type="submit">Apply</button>
+        </form>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="card" data-aos="zoom-in">
+        <h3>📊 Category Summary</h3>
+        {% for s in summary %}
+            <span class="badge">{{s[0]}} : ₹{{s[1]}}</span>
+        {% endfor %}
+    </div>
+
+    <!-- CHART -->
+    <div class="card" data-aos="fade-up">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card" data-aos="fade-left">
+        <h3>📋 All Expenses</h3>
+        <table>
+            <tr>
+                <th>Title</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Action</th>
+            </tr>
+
+            {% for e in expenses %}
+            <tr>
+                <td>{{e[1]}}</td>
+                <td>₹{{e[2]}}</td>
+                <td>{{e[3]}}</td>
+                <td>
+                    <a class="btn" href="/edit/{{e[0]}}">Edit</a>
+                    <a class="btn" href="/delete/{{e[0]}}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
+
+<!-- Chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div id="chart-data" data-summary='{{ summary | tojson }}'></div>
+
+<script>
+let raw = JSON.parse(document.getElementById("chart-data").dataset.summary);
+
+let labels = raw.map(x => x[0]);
+let data = raw.map(x => x[1]);
+
+new Chart(document.getElementById('myChart'), {
+    type: 'doughnut',
+    data: {
+        labels: labels,
+        datasets: [{
+            data: data
+        }]
+    },
+    options: {
+        animation: {
+            animateScale: true,
+            animateRotate: true
+        }
+    }
+});
+
+function toggleDark(){
+    document.body.classList.toggle("dark");
+}
+</script>
+
+<!-- AOS Script -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+AOS.init({
+    duration: 800
+});
+</script>
+
+</body>
+</html>
