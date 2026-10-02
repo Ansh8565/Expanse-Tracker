@@ -14,7 +14,7 @@
         <li><strong>{{ cat }}:</strong> ${{ "%.2f"|format(total) }}</li>
     {% else %}
         <li>No summary available.</li>
-    {% endif %}
+    {% endfor %}
 </ul>
 
 <h3>All Expenses</h3>
