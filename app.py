@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "secret123")
+app.secret_key = os.environ.get("SECRET_KEY", "secret123_expense_tracker_key")
 
 
 def get_db():
@@ -13,14 +13,9 @@ def get_db():
     db_path = "/tmp/expense.db" if os.environ.get("VERCEL") else "expense.db"
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
-    return conn
 
-
-def init_db():
-    conn = get_db()
-    cur = conn.cursor()
-
-    cur.execute("""
+    # Ensure tables exist on every database connection (critical for Vercel serverless containers)
+    conn.execute("""
         CREATE TABLE IF NOT EXISTS users(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE,
@@ -28,7 +23,7 @@ def init_db():
         )
     """)
 
-    cur.execute("""
+    conn.execute("""
         CREATE TABLE IF NOT EXISTS expenses(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
@@ -37,12 +32,9 @@ def init_db():
             user_id INTEGER
         )
     """)
-
     conn.commit()
-    conn.close()
 
-
-init_db()
+    return conn
 
 
 def login_required(route_function):
@@ -159,19 +151,21 @@ def add():
 
         try:
             amount = float(amount_str)
-        except ValueError:
-            return "Invalid amount", 400
+        except (ValueError, TypeError):
+            return "Invalid amount format", 400
 
         conn = get_db()
-        conn.execute(
-            """
-            INSERT INTO expenses(title, amount, category, user_id)
-            VALUES (?, ?, ?, ?)
-            """,
-            (title, amount, category, session["user_id"])
-        )
-        conn.commit()
-        conn.close()
+        try:
+            conn.execute(
+                """
+                INSERT INTO expenses(title, amount, category, user_id)
+                VALUES (?, ?, ?, ?)
+                """,
+                (title, amount, category, session["user_id"])
+            )
+            conn.commit()
+        finally:
+            conn.close()
 
         return redirect("/")
 
@@ -190,9 +184,9 @@ def edit(id):
 
         try:
             amount = float(amount_str)
-        except ValueError:
+        except (ValueError, TypeError):
             conn.close()
-            return "Invalid amount", 400
+            return "Invalid amount format", 400
 
         conn.execute(
             """
