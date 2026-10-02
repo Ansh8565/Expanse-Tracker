@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Expense Dashboard</h2>
+
+<form method="GET" style="margin-bottom: 20px;">
+    <input type="text" name="search" placeholder="Search title" value="{{ request.args.get('search', '') }}" style="width: 40%; display: inline;">
+    <input type="text" name="category" placeholder="Filter category" value="{{ request.args.get('category', '') }}" style="width: 40%; display: inline;">
+    <button type="submit" style="width: auto;">Filter</button>
+</form>
+
+<h3>Summary by Category</h3>
+<ul>
+    {% for cat, total in summary %}
+        <li><strong>{{ cat }}:</strong> ${{ "%.2f"|format(total) }}</li>
+    {% else %}
+        <li>No summary available.</li>
+    {% endif %}
+</ul>
+
+<h3>All Expenses</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for expense in expenses %}
+        <tr>
+            <td>{{ expense.title }}</td>
+            <td>${{ "%.2f"|format(expense.amount) }}</td>
+            <td>{{ expense.category }}</td>
+            <td>
+                <a href="/edit/{{ expense.id }}" class="btn-edit">Edit</a>
+                <a href="/delete/{{ expense.id }}" class="btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4">No expenses found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

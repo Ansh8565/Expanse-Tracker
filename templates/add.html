@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Add New Expense</h2>
+<form method="POST">
+    <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+    </div>
+    <div class="form-group">
+        <label for="amount">Amount ($):</label>
+        <input type="number" step="0.01" id="amount" name="amount" required>
+    </div>
+    <div class="form-group">
+        <label for="category">Category:</label>
+        <input type="text" id="category" name="category" required>
+    </div>
+    <button type="submit">Save Expense</button>
+</form>
+{% endblock %}
