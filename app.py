@@ -10,12 +10,12 @@ app.secret_key = os.environ.get("SECRET_KEY", "expense_tracker_secret_key_12345"
 
 
 def get_db():
-    # Vercel serverless environment only allows writing to /tmp directory
-    db_path = "/tmp/expense.db" if os.environ.get("VERCEL") else "expense.db"
+    # Standard SQLite database file for Render deployment
+    db_path = "expense.db"
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
 
-    # Ensure tables exist on every database connection
+    # Ensure database tables exist
     conn.execute("""
         CREATE TABLE IF NOT EXISTS users(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,7 +40,6 @@ def get_db():
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    # Output exact traceback to browser to diagnose serverless runtime errors
     tb = traceback.format_exc()
     print("UNHANDLED EXCEPTION:", tb)
     return f"<h2>Application Error</h2><pre>{tb}</pre>", 500
@@ -65,7 +64,6 @@ def register():
         if not username or not password:
             return "Username and password are required", 400
 
-        # Use pbkdf2:sha256 for universal compatibility in serverless environments
         hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
         conn = get_db()
 
