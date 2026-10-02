@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect, session
 import sqlite3
 import os
+import traceback
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "secret123_expense_tracker_key")
+app.secret_key = os.environ.get("SECRET_KEY", "expense_tracker_secret_key_12345")
 
 
 def get_db():
@@ -14,7 +15,7 @@ def get_db():
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
 
-    # Ensure tables exist on every database connection (critical for Vercel serverless containers)
+    # Ensure tables exist on every database connection
     conn.execute("""
         CREATE TABLE IF NOT EXISTS users(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,6 +38,14 @@ def get_db():
     return conn
 
 
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # Output exact traceback to browser to diagnose serverless runtime errors
+    tb = traceback.format_exc()
+    print("UNHANDLED EXCEPTION:", tb)
+    return f"<h2>Application Error</h2><pre>{tb}</pre>", 500
+
+
 def login_required(route_function):
     @wraps(route_function)
     def wrapper(*args, **kwargs):
@@ -56,7 +65,8 @@ def register():
         if not username or not password:
             return "Username and password are required", 400
 
-        hashed_password = generate_password_hash(password)
+        # Use pbkdf2:sha256 for universal compatibility in serverless environments
+        hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
         conn = get_db()
 
         try:
